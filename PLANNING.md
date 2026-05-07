@@ -105,3 +105,34 @@
 6. Admin: quản lý JD + cấu hình form
 7. AI screening service
 8. Admin: hiệu suất + commission
+
+## Design System
+
+### Brand Colors
+- Primary: #0D7C66 (xanh lá đậm)
+- Secondary: #1B2B4B (xanh than)
+- Accent: #34D399 (xanh lá sáng - dùng cho CTA, badge)
+- Background: #F8FAFC
+- Text: #0F172A
+
+### Typography
+- Font: Be Vietnam Pro (Google Fonts)
+- Heading: font-bold, tracking-tight
+- Body: font-normal, leading-relaxed
+
+### Style
+- Border radius: rounded-xl cho card, rounded-full cho badge
+- Shadow: shadow-sm mặc định, shadow-md khi hover
+- Spacing: padding 24px card, gap 16px grid
+- Transition: transition-all duration-200
+
+### Public Site Layout
+- Header: logo trái + nav + nút "Đăng nhập HR" phải
+- Hero section: headline lớn + số liệu công ty
+- Job listing: grid 2-3 cột, card có department tag + badge trạng thái
+- Footer: thông tin liên hệ, hotline, Zalo
+
+### Admin Dashboard Layout  
+- Sidebar cố định bên trái, màu #1B2B4B
+- Header trắng với breadcrumb + avatar HR
+- Content area background #F8FAFC
