@@ -2,6 +2,7 @@
 import { Head, router } from '@inertiajs/vue3'
 import { computed, ref, watch } from 'vue'
 import AdminLayout from '../../components/AdminLayout.vue'
+import EmptyState from '../../components/EmptyState.vue'
 
 const props = defineProps({
     month: { type: String, default: '' },
@@ -70,9 +71,12 @@ const roleLabels = { admin: 'Quản trị viên', hr_manager: 'Trưởng nhóm',
                 </div>
             </div>
 
-            <div v-if="rows.length === 0" class="px-6 py-16 text-center text-sm text-slate-500">
-                Chưa có HR nào.
-            </div>
+            <EmptyState
+                v-if="rows.length === 0"
+                icon="chart"
+                title="Chưa có dữ liệu hiệu suất"
+                description="Tháng này chưa có HR nào được gán hồ sơ. Thử chọn tháng khác từ bộ lọc phía trên."
+            />
 
             <div v-else class="divide-y divide-slate-100">
                 <div v-for="row in rows" :key="row.id" class="px-6 py-5">

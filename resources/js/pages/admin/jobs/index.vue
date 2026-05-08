@@ -2,6 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import AdminLayout from '../../../components/AdminLayout.vue'
+import EmptyState from '../../../components/EmptyState.vue'
 
 defineProps({
     jobs: { type: Array, default: () => [] },
@@ -49,9 +50,12 @@ const deleteJob = (job) => {
                 </Link>
             </div>
 
-            <div v-if="jobs.length === 0" class="px-6 py-16 text-center text-sm text-slate-500">
-                Chưa có vị trí nào. Bấm "Tạo vị trí mới" để bắt đầu.
-            </div>
+            <EmptyState
+                v-if="jobs.length === 0"
+                icon="briefcase"
+                title="Chưa có vị trí tuyển dụng"
+                description="Bấm “Tạo vị trí mới” để đăng JD đầu tiên và cấu hình form sơ vấn cho ứng viên."
+            />
 
             <div v-else class="overflow-x-auto">
                 <table class="w-full text-sm">

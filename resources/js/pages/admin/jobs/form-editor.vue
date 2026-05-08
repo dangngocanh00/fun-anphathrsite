@@ -2,6 +2,8 @@
 import { Head, Link, router } from '@inertiajs/vue3'
 import { ref, watch } from 'vue'
 import AdminLayout from '../../../components/AdminLayout.vue'
+import ConfirmDialog from '../../../components/ConfirmDialog.vue'
+import EmptyState from '../../../components/EmptyState.vue'
 
 const props = defineProps({
     job: { type: Object, required: true },
@@ -57,9 +59,14 @@ const openEdit = (field) => {
         is_required: field.is_required,
     }
 }
-const closeModal = () => { editing.value = null; modalErrors.value = {} }
+const closeModal = () => {
+    if (submitting.value) return
+    editing.value = null
+    modalErrors.value = {}
+}
 
 const modalErrors = ref({})
+const submitting = ref(false)
 
 const isChoice = (t) => t === 'select' || t === 'radio'
 
@@ -67,6 +74,8 @@ const addOption = () => { editing.value.options.push('') }
 const removeOption = (idx) => { editing.value.options.splice(idx, 1) }
 
 const submitField = () => {
+    if (submitting.value) return
+
     if (!editing.value.label.trim()) { modalErrors.value = { label: 'Vui lòng nhập nhãn câu hỏi.' }; return }
     if (isChoice(editing.value.type)) {
         const opts = editing.value.options.map((o) => o.trim()).filter(Boolean)
@@ -86,16 +95,32 @@ const submitField = () => {
         : `/admin/jobs/${props.job.id}/form/fields`
     const method = editing.value.id ? 'put' : 'post'
 
+    submitting.value = true
+    modalErrors.value = {}
+
     router[method](url, payload, {
         preserveScroll: true,
-        onSuccess: () => closeModal(),
+        onSuccess: () => {
+            editing.value = null
+            modalErrors.value = {}
+        },
         onError: (errors) => { modalErrors.value = errors },
+        onFinish: () => { submitting.value = false },
     })
 }
 
-const deleteField = (field) => {
-    if (!confirm(`Xoá câu hỏi "${field.label}"?`)) return
-    router.delete(`/admin/jobs/${props.job.id}/form/fields/${field.id}`, { preserveScroll: true })
+const pendingDelete = ref(null)
+const deleting = ref(false)
+
+const askDeleteField = (field) => { pendingDelete.value = field }
+const confirmDelete = () => {
+    if (!pendingDelete.value || deleting.value) return
+    deleting.value = true
+    router.delete(`/admin/jobs/${props.job.id}/form/fields/${pendingDelete.value.id}`, {
+        preserveScroll: true,
+        onSuccess: () => { pendingDelete.value = null },
+        onFinish: () => { deleting.value = false },
+    })
 }
 </script>
 
@@ -127,9 +152,12 @@ const deleteField = (field) => {
                     </button>
                 </div>
 
-                <div v-if="localFields.length === 0" class="px-6 py-16 text-center text-sm text-slate-500">
-                    Chưa có câu hỏi nào. Vị trí này sẽ chỉ hỏi thông tin cơ bản (tên, SĐT, email, CV).
-                </div>
+                <EmptyState
+                    v-if="localFields.length === 0"
+                    icon="inbox"
+                    title="Chưa có câu hỏi sơ vấn"
+                    description="Vị trí này sẽ chỉ hỏi thông tin cơ bản (tên, SĐT, email, CV). Bấm “Thêm câu hỏi” để cấu hình câu hỏi tuỳ biến."
+                />
 
                 <ul v-else class="divide-y divide-slate-100">
                     <li
@@ -168,7 +196,7 @@ const deleteField = (field) => {
                             >Sửa</button>
                             <button
                                 type="button"
-                                @click="deleteField(field)"
+                                @click="askDeleteField(field)"
                                 class="rounded-lg border border-red-100 text-red-600 px-2.5 py-1 text-xs font-semibold hover:bg-red-50 transition-all"
                             >Xoá</button>
                         </div>
@@ -188,7 +216,12 @@ const deleteField = (field) => {
                         <h3 class="text-lg font-bold text-[#1B2B4B] tracking-tight">
                             {{ editing.id ? 'Sửa câu hỏi' : 'Thêm câu hỏi' }}
                         </h3>
-                        <button type="button" class="text-slate-400 hover:text-slate-700" @click="closeModal">✕</button>
+                        <button
+                            type="button"
+                            class="text-slate-400 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed"
+                            :disabled="submitting"
+                            @click="closeModal"
+                        >✕</button>
                     </div>
                     <div class="px-6 py-5 space-y-4">
                         <div>
@@ -242,17 +275,38 @@ const deleteField = (field) => {
                         </label>
                     </div>
                     <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-2">
-                        <button type="button" class="rounded-lg px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900" @click="closeModal">Huỷ</button>
                         <button
                             type="button"
-                            class="rounded-lg bg-[#0D7C66] text-white px-4 py-1.5 text-sm font-semibold hover:bg-[#0c6553]"
+                            class="rounded-lg px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                            :disabled="submitting"
+                            @click="closeModal"
+                        >Huỷ</button>
+                        <button
+                            type="button"
+                            class="rounded-lg bg-[#0D7C66] text-white px-4 py-1.5 text-sm font-semibold hover:bg-[#0c6553] disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                            :disabled="submitting"
                             @click="submitField"
                         >
-                            {{ editing.id ? 'Lưu thay đổi' : 'Thêm câu hỏi' }}
+                            <svg v-if="submitting" class="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25" />
+                                <path d="M12 2a10 10 0 0110 10" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                            </svg>
+                            <span v-if="submitting">Đang lưu…</span>
+                            <span v-else>{{ editing.id ? 'Lưu thay đổi' : 'Thêm câu hỏi' }}</span>
                         </button>
                     </div>
                 </div>
             </div>
         </Teleport>
+
+        <ConfirmDialog
+            :open="pendingDelete !== null"
+            title="Xoá câu hỏi"
+            :message="pendingDelete ? `Xoá câu hỏi “${pendingDelete.label}”? Câu trả lời cũ của ứng viên cho câu này cũng sẽ bị xoá.` : ''"
+            confirm-label="Xoá câu hỏi"
+            :loading="deleting"
+            @confirm="confirmDelete"
+            @cancel="pendingDelete = null"
+        />
     </AdminLayout>
 </template>

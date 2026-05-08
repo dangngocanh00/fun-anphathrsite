@@ -1,14 +1,19 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
+import NavProgress from './NavProgress.vue'
+import Toast from './Toast.vue'
 </script>
 
 <template>
+    <NavProgress />
+    <Toast />
+
     <div class="min-h-screen flex flex-col bg-[#f8fafc] text-[#0F172A]">
         <header class="sticky top-0 z-30 bg-white/85 backdrop-blur border-b border-slate-100">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-                <Link href="/" class="flex items-center gap-2.5 group">
-                    <span class="w-9 h-9 rounded-xl bg-[#0D7C66] text-white font-extrabold flex items-center justify-center text-base group-hover:shadow-md transition-all duration-200">A</span>
-                    <span class="font-bold tracking-tight text-[#1B2B4B]">AnPhat <span class="text-[#0D7C66]">Tuyển dụng</span></span>
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-3">
+                <Link href="/" class="flex items-center gap-2 sm:gap-2.5 group min-w-0">
+                    <span class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#0D7C66] text-white font-extrabold flex items-center justify-center text-sm sm:text-base group-hover:shadow-md transition-all duration-200 flex-shrink-0">A</span>
+                    <span class="font-bold tracking-tight text-[#1B2B4B] truncate">AnPhat <span class="text-[#0D7C66] hidden sm:inline">Tuyển dụng</span></span>
                 </Link>
 
                 <nav class="hidden md:flex items-center gap-7 text-sm">
@@ -18,14 +23,14 @@ import { Link } from '@inertiajs/vue3'
 
                 <Link
                     href="/admin/login"
-                    class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-sm font-semibold text-[#1B2B4B] shadow-sm hover:border-[#0D7C66] hover:text-[#0D7C66] transition-all duration-200"
+                    class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 sm:px-4 text-xs sm:text-sm font-semibold text-[#1B2B4B] shadow-sm hover:border-[#0D7C66] hover:text-[#0D7C66] transition-all duration-200 flex-shrink-0"
                 >
                     Đăng nhập HR
                 </Link>
             </div>
         </header>
 
-        <main class="flex-1">
+        <main class="flex-1 page-fade">
             <slot />
         </main>
 
@@ -66,3 +71,13 @@ import { Link } from '@inertiajs/vue3'
         </footer>
     </div>
 </template>
+
+<style scoped>
+.page-fade {
+    animation: fadeIn 200ms ease-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>

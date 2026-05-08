@@ -8,6 +8,7 @@ use App\Models\JobFormField;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -40,6 +41,8 @@ class JobFormController extends Controller
     public function store(Request $request, Job $job): RedirectResponse
     {
         $data = $this->validateField($request);
+        $this->ensureLabelUnique($job, $data['label']);
+
         $data['order'] = ((int) $job->formFields()->max('order')) + 1;
 
         $job->formFields()->create($data);
@@ -51,7 +54,10 @@ class JobFormController extends Controller
     {
         abort_unless($field->job_id === $job->id, 404);
 
-        $field->update($this->validateField($request));
+        $data = $this->validateField($request);
+        $this->ensureLabelUnique($job, $data['label'], $field->id);
+
+        $field->update($data);
 
         return back()->with('success', 'Đã cập nhật câu hỏi.');
     }
@@ -125,5 +131,19 @@ class JobFormController extends Controller
         $data['is_required'] = (bool) ($data['is_required'] ?? false);
 
         return $data;
+    }
+
+    private function ensureLabelUnique(Job $job, string $label, ?int $ignoreId = null): void
+    {
+        $exists = $job->formFields()
+            ->whereRaw('LOWER(label) = ?', [mb_strtolower(trim($label))])
+            ->when($ignoreId, fn ($q, $id) => $q->where('id', '!=', $id))
+            ->exists();
+
+        if ($exists) {
+            throw ValidationException::withMessages([
+                'label' => 'Câu hỏi này đã tồn tại trong vị trí.',
+            ]);
+        }
     }
 }

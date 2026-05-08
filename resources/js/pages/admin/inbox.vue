@@ -2,6 +2,7 @@
 import { Head, router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import AdminLayout from '../../components/AdminLayout.vue'
+import EmptyState from '../../components/EmptyState.vue'
 import ScoreBadge from '../../components/ScoreBadge.vue'
 
 const props = defineProps({
@@ -55,9 +56,12 @@ const analyze = (candidate) => {
                 </div>
             </div>
 
-            <div v-if="candidates.length === 0" class="px-6 py-16 text-center text-sm text-slate-500">
-                Hiện không có hồ sơ mới nào cần xử lý.
-            </div>
+            <EmptyState
+                v-if="candidates.length === 0"
+                icon="inbox"
+                title="Chưa có hồ sơ nào chờ xử lý"
+                description="Mọi hồ sơ mới đều đã được phân HR. Hồ sơ ứng viên mới sẽ tự động xuất hiện ở đây khi gửi đơn từ trang công khai."
+            />
 
             <div v-else class="overflow-x-auto">
                 <table class="w-full text-sm">

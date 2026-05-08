@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CandidateController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InboxController;
 use App\Http\Controllers\Admin\JobAdminController;
@@ -29,6 +30,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('inbox', [InboxController::class, 'index'])->name('inbox');
         Route::post('inbox/{candidate}/assign', [InboxController::class, 'assign'])->name('inbox.assign');
         Route::post('inbox/{candidate}/analyze', [InboxController::class, 'analyze'])->name('inbox.analyze');
+
+        Route::get('candidates', [CandidateController::class, 'index'])->name('candidates.index');
+        Route::get('candidates/{candidate}', [CandidateController::class, 'show'])->name('candidates.show');
 
         Route::get('pipeline', [PipelineController::class, 'index'])->name('pipeline');
         Route::get('pipeline/{candidate}', [PipelineController::class, 'show'])->name('pipeline.show');
