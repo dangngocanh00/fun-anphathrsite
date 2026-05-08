@@ -57,3 +57,60 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+Cập nhật file README.md với nội dung đầy đủ bằng tiếng Việt, gồm:
+
+1. Giới thiệu project: AnPhat Recruitment System — hệ thống tuyển dụng nội bộ gồm public site + HR dashboard
+
+2. Tech stack: Laravel 12, Vue 3, Inertia.js, Tailwind CSS, MySQL, Spatie Permission
+
+3. Yêu cầu môi trường:
+   - PHP 8.2+ (XAMPP)
+   - Composer
+   - Node.js 18+
+   - MySQL (XAMPP)
+
+4. Các bước chạy local lần đầu:
+   - Clone repo
+   - composer install
+   - npm install
+   - cp .env.example .env + cấu hình DB
+   - php artisan key:generate
+   - Tạo database anphat_recruitment trong phpMyAdmin
+   - php artisan migrate --seed
+   - php artisan serve (terminal 1)
+   - npm run dev (terminal 2)
+   - Vào http://localhost:8000
+
+5. Reset database về data mẫu:
+   - php artisan migrate:fresh --seed
+
+6. Tài khoản test (LOCAL ONLY — KHÔNG dùng production):
+   admin@anphat.test / password — Admin (toàn quyền)
+   manager1@anphat.test / password — HR Trưởng nhóm
+   manager2@anphat.test / password — HR Trưởng nhóm
+   hr1@anphat.test / password — Nhân viên HR
+   hr2@anphat.test / password — Nhân viên HR
+   hr3@anphat.test / password — Nhân viên HR
+
+7. Cấu trúc thư mục chính:
+   app/Http/Controllers/Admin/ — controllers HR dashboard
+   app/Http/Controllers/ — controllers public site
+   app/Models/ — Eloquent models
+   app/Services/ — AIScreeningService
+   resources/js/pages/admin/ — Vue pages HR dashboard
+   resources/js/pages/ — Vue pages public site
+   resources/js/components/ — shared components
+   database/migrations/ — migrations
+   database/seeders/ — seeders mẫu
+
+8. Phân quyền:
+   admin — toàn quyền, quản lý JD, form, commission, tài khoản HR
+   hr_manager — xem toàn bộ pipeline, gán hồ sơ, xem hiệu suất team
+   hr — xử lý hồ sơ được gán, xem commission bản thân
+
+9. Biến môi trường quan trọng cần cấu hình:
+   DB_DATABASE, DB_USERNAME, DB_PASSWORD
+   ANTHROPIC_API_KEY (để dùng AI screening — có thể bỏ qua)
+
+10. Lưu ý: thêm warning to rõ ràng rằng tài khoản test và ANTHROPIC_API_KEY không được commit lên production
