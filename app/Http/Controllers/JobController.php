@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Candidate;
 use App\Models\Job;
+use App\Models\PipelineLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -115,7 +115,9 @@ class JobController extends Controller
 
         $validated = $request->validate($rules, $messages);
 
-        DB::transaction(function () use ($job, $validated) {
+        $refHr = RefController::activeRefHr($request);
+
+        DB::transaction(function () use ($job, $validated, $refHr) {
             $candidate = Candidate::create([
                 'job_id' => $job->id,
                 'full_name' => $validated['full_name'],
@@ -123,6 +125,7 @@ class JobController extends Controller
                 'email' => $validated['email'] ?? null,
                 'cv_link' => $validated['cv_link'],
                 'current_stage' => 1,
+                'assigned_hr_id' => $refHr?->id,
             ]);
 
             $answers = $validated['answers'] ?? [];
@@ -142,6 +145,17 @@ class JobController extends Controller
             }
             if ($rows) {
                 DB::table('candidate_form_answers')->insert($rows);
+            }
+
+            if ($refHr) {
+                PipelineLog::create([
+                    'candidate_id' => $candidate->id,
+                    'from_stage' => null,
+                    'to_stage' => 1,
+                    'moved_by' => null,
+                    'ref_code' => $refHr->ref_code,
+                    'note' => "Ứng viên đến từ ref link của {$refHr->name}.",
+                ]);
             }
         });
 

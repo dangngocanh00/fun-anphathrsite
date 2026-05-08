@@ -2,16 +2,28 @@
 import { Head, Link, router } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
 import AdminLayout from '../../../components/AdminLayout.vue'
+import ConfirmDialog from '../../../components/ConfirmDialog.vue'
 import ScoreBadge from '../../../components/ScoreBadge.vue'
 
 const props = defineProps({
     candidate: { type: Object, required: true },
     stages: { type: Object, required: true },
+    can: { type: Object, default: () => ({ delete: false }) },
 })
 
 const noteForm = ref({ note: '', result: 'pending' })
 const noteSubmitting = ref(false)
 const moveSubmitting = ref(false)
+
+const confirmDelete = ref(false)
+const deleting = ref(false)
+const submitDelete = () => {
+    if (deleting.value) return
+    deleting.value = true
+    router.delete(`/admin/candidates/${props.candidate.id}`, {
+        onFinish: () => { deleting.value = false; confirmDelete.value = false },
+    })
+}
 
 const submitNote = () => {
     if (noteSubmitting.value || !noteForm.value.note.trim()) return
@@ -55,8 +67,16 @@ const aiAnalyzed = computed(() => !!props.candidate.ai?.analyzed_at)
 
     <AdminLayout :title="candidate.full_name" :breadcrumb="`Admin / Ứng viên / ${candidate.full_name}`">
         <div class="max-w-5xl space-y-5">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center justify-between gap-3 flex-wrap">
                 <Link href="/admin/candidates" class="text-sm text-slate-500 hover:text-[#0D7C66]">← Danh sách ứng viên</Link>
+                <button
+                    v-if="can.delete"
+                    type="button"
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-red-100 text-red-600 px-3 py-1.5 text-xs font-semibold hover:bg-red-50 transition-all"
+                    @click="confirmDelete = true"
+                >
+                    Xoá ứng viên
+                </button>
             </div>
 
             <div class="rounded-2xl bg-white border border-slate-100 shadow-sm p-6 md:p-8">
@@ -228,5 +248,15 @@ const aiAnalyzed = computed(() => !!props.candidate.ai?.analyzed_at)
                 <p v-else class="text-sm text-slate-400 italic">Chưa có chuyển bước nào.</p>
             </div>
         </div>
+
+        <ConfirmDialog
+            :open="confirmDelete"
+            title="Xoá ứng viên"
+            :message="`Xoá hồ sơ “${candidate.full_name}”? Toàn bộ câu trả lời, lịch sử pipeline và ghi chú phỏng vấn sẽ bị ẩn (soft delete). Sau khi xoá bạn sẽ được đưa về danh sách ứng viên.`"
+            confirm-label="Xoá hồ sơ"
+            :loading="deleting"
+            @confirm="submitDelete"
+            @cancel="confirmDelete = false"
+        />
     </AdminLayout>
 </template>

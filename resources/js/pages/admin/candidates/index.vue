@@ -2,6 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3'
 import { ref, watch } from 'vue'
 import AdminLayout from '../../../components/AdminLayout.vue'
+import ConfirmDialog from '../../../components/ConfirmDialog.vue'
 import EmptyState from '../../../components/EmptyState.vue'
 import ScoreBadge from '../../../components/ScoreBadge.vue'
 
@@ -11,8 +12,23 @@ const props = defineProps({
     jobs: { type: Array, default: () => [] },
     hrs: { type: Array, default: () => [] },
     stages: { type: Object, default: () => ({}) },
-    can: { type: Object, default: () => ({ filter_by_hr: false }) },
+    can: { type: Object, default: () => ({ filter_by_hr: false, delete: false }) },
 })
+
+const pendingDelete = ref(null)
+const deleting = ref(false)
+const askDelete = (candidate, event) => {
+    event?.stopPropagation()
+    pendingDelete.value = candidate
+}
+const confirmDelete = () => {
+    if (!pendingDelete.value || deleting.value) return
+    deleting.value = true
+    router.delete(`/admin/candidates/${pendingDelete.value.id}`, {
+        onSuccess: () => { pendingDelete.value = null },
+        onFinish: () => { deleting.value = false },
+    })
+}
 
 const search = ref(props.filters.search ?? '')
 const jobId = ref(props.filters.job_id ?? null)
@@ -141,6 +157,7 @@ const formatDate = (iso) => {
                             <th class="px-6 py-3 font-medium">HR phụ trách</th>
                             <th class="px-6 py-3 font-medium">AI</th>
                             <th class="px-6 py-3 font-medium text-right">Ngày nộp</th>
+                            <th v-if="can.delete" class="px-6 py-3 font-medium text-right"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -175,6 +192,13 @@ const formatDate = (iso) => {
                             <td class="px-6 py-4 text-right text-slate-500 whitespace-nowrap">
                                 {{ formatDate(c.created_at) }}
                             </td>
+                            <td v-if="can.delete" class="px-6 py-4 text-right">
+                                <button
+                                    type="button"
+                                    class="rounded-lg border border-red-100 text-red-600 px-2.5 py-1 text-xs font-semibold hover:bg-red-50 transition-all"
+                                    @click="askDelete(c, $event)"
+                                >Xoá</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -204,5 +228,15 @@ const formatDate = (iso) => {
                 </nav>
             </div>
         </div>
+
+        <ConfirmDialog
+            :open="pendingDelete !== null"
+            title="Xoá ứng viên"
+            :message="pendingDelete ? `Xoá hồ sơ “${pendingDelete.full_name}”? Toàn bộ câu trả lời, lịch sử pipeline và ghi chú phỏng vấn sẽ bị ẩn (soft delete).` : ''"
+            confirm-label="Xoá hồ sơ"
+            :loading="deleting"
+            @confirm="confirmDelete"
+            @cancel="pendingDelete = null"
+        />
     </AdminLayout>
 </template>

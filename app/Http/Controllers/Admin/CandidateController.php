@@ -7,6 +7,7 @@ use App\Models\Candidate;
 use App\Models\Job;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -80,6 +81,7 @@ class CandidateController extends Controller
             'stages' => PipelineController::STAGES,
             'can' => [
                 'filter_by_hr' => $isManager,
+                'delete' => $user->hasRole('admin'),
             ],
         ]);
     }
@@ -134,7 +136,24 @@ class CandidateController extends Controller
                 ])->values(),
             ],
             'stages' => PipelineController::STAGES,
+            'can' => [
+                'delete' => Auth::user()->hasRole('admin'),
+            ],
         ]);
+    }
+
+    public function destroy(Candidate $candidate): RedirectResponse
+    {
+        if (! Auth::user()->hasRole('admin')) {
+            throw new AuthorizationException('Chỉ admin mới được xoá ứng viên.');
+        }
+
+        $name = $candidate->full_name;
+        $candidate->delete();
+
+        return redirect()
+            ->route('admin.candidates.index')
+            ->with('success', "Đã xoá hồ sơ \"{$name}\".");
     }
 
     private function authorizeAccess(Candidate $candidate): void

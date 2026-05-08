@@ -17,7 +17,19 @@ class AdminAuth
             return redirect()->route('admin.login.show');
         }
 
-        if (! Auth::user()->hasAnyRole(self::ADMIN_ROLES)) {
+        $user = Auth::user();
+
+        if (! $user->is_active) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('admin.login.show')
+                ->withErrors(['email' => 'Tài khoản đã bị vô hiệu hoá.']);
+        }
+
+        if (! $user->hasAnyRole(self::ADMIN_ROLES)) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

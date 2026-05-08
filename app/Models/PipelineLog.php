@@ -16,6 +16,7 @@ class PipelineLog extends Model
         'to_stage',
         'moved_by',
         'note',
+        'ref_code',
     ];
 
     protected function casts(): array

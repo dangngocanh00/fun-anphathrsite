@@ -29,6 +29,7 @@ const nav = computed(() => [
     { label: 'Ứng viên', href: '/admin/candidates', show: true },
     { label: 'Vị trí tuyển', href: '/admin/jobs', show: isAdmin.value },
     { label: 'Hiệu suất', href: '/admin/performance', show: isManager.value },
+    { label: 'Tài khoản HR', href: '/admin/accounts', show: isAdmin.value },
 ].filter((item) => item.show))
 
 const drawerOpen = ref(false)

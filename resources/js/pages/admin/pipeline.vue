@@ -206,6 +206,11 @@ const resultClass = (r) => ({
             </div>
         </div>
 
+        <p class="mt-3 text-xs text-slate-400 leading-relaxed">
+            * Ứng viên đã ở bước "Ký hợp đồng" trên 1 tháng được ẩn tự động khỏi Kanban để giảm nhiễu. Vẫn xem được đầy đủ trong
+            <Link href="/admin/candidates" class="text-[#0D7C66] hover:underline font-medium">danh sách ứng viên</Link>.
+        </p>
+
         <Teleport to="body">
             <div
                 v-if="detail"

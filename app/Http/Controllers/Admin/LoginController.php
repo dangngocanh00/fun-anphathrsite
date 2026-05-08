@@ -36,7 +36,19 @@ class LoginController extends Controller
             ]);
         }
 
-        if (! Auth::user()->hasAnyRole(self::ADMIN_ROLES)) {
+        $user = Auth::user();
+
+        if (! $user->is_active) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => 'Tài khoản đã bị vô hiệu hoá. Vui lòng liên hệ quản trị.',
+            ]);
+        }
+
+        if (! $user->hasAnyRole(self::ADMIN_ROLES)) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

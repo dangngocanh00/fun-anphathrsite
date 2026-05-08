@@ -49,16 +49,16 @@ import Toast from './Toast.vue'
                 <div>
                     <p class="text-sm font-semibold text-[#1B2B4B] mb-3">Liên hệ ứng tuyển</p>
                     <ul class="text-sm text-slate-600 space-y-2">
-                        <li><span class="text-slate-400">Hotline:</span> <a class="hover:text-[#0D7C66] font-medium" href="tel:0989123456">0989 123 456</a></li>
-                        <li><span class="text-slate-400">Email:</span> <a class="hover:text-[#0D7C66] font-medium" href="mailto:tuyendung@anphat.vn">tuyendung@anphat.vn</a></li>
-                        <li><span class="text-slate-400">Zalo:</span> <a class="hover:text-[#0D7C66] font-medium" href="https://zalo.me/0989123456" target="_blank" rel="noopener">zalo.me/0989123456</a></li>
+                        <li><span class="text-slate-400">Hotline:</span> <a class="hover:text-[#0D7C66] font-medium" href="tel:0868792302">0868 792 302</a></li>
+                        <li><span class="text-slate-400">Email:</span> <a class="hover:text-[#0D7C66] font-medium" href="mailto:duyentm@notiez.net">duyentm@notiez.net</a></li>
+                        <li><span class="text-slate-400">Zalo:</span> <a class="hover:text-[#0D7C66] font-medium" href="https://zalo.me/0868792302" target="_blank" rel="noopener">zalo.me/0868792302</a></li>
                     </ul>
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-[#1B2B4B] mb-3">Văn phòng</p>
                     <p class="text-sm text-slate-600 leading-relaxed">
-                        Tầng 8, Tòa nhà AnPhat<br />
-                        Số 1 Đường ABC, Cầu Giấy, Hà Nội
+                        Tòa nhà văn phòng Ellipse Tower<br />
+                        110 Trần Phú - Mộ Lao - Hà Đông - Hà Nội
                     </p>
                 </div>
             </div>

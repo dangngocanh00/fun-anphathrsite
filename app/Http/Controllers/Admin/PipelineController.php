@@ -12,6 +12,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -41,8 +42,14 @@ class PipelineController extends Controller
             'stage' => $request->integer('stage') ?: null,
         ];
 
+        $hireCutoff = Carbon::now()->subMonth();
+
         $query = Candidate::query()
             ->with(['job:id,title,slug,department', 'assignedHr:id,name'])
+            ->where(function ($q) use ($hireCutoff) {
+                $q->where('current_stage', '!=', 6)
+                    ->orWhere('updated_at', '>=', $hireCutoff);
+            })
             ->when($filters['job_id'], fn ($q, $v) => $q->where('job_id', $v))
             ->when($filters['stage'], fn ($q, $v) => $q->where('current_stage', $v))
             ->when(
