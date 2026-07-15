@@ -20,9 +20,9 @@ const roleLabel = computed(() => primaryRole.value ? (roleLabels[primaryRole.val
 
 const stageLabels = {
     1: 'Tiếp nhận',
-    2: 'Sơ vấn',
-    3: 'Sàng lọc',
-    4: 'PV chuyên môn',
+    2: 'Sàng lọc',
+    3: 'PV chuyên môn',
+    4: 'Loại CV',
     5: 'Thử việc',
     6: 'Ký HĐ',
 }
@@ -30,8 +30,8 @@ const stageLabels = {
 const stageTone = (s) => ({
     1: 'bg-slate-100 text-slate-700',
     2: 'bg-blue-50 text-blue-700',
-    3: 'bg-indigo-50 text-indigo-700',
-    4: 'bg-purple-50 text-purple-700',
+    3: 'bg-purple-50 text-purple-700',
+    4: 'bg-red-50 text-red-700',
     5: 'bg-amber-50 text-amber-700',
     6: 'bg-emerald-50 text-emerald-700',
 }[s] ?? 'bg-slate-100 text-slate-600')

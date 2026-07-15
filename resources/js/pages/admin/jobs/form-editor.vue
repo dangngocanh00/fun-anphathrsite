@@ -4,6 +4,7 @@ import { ref, watch } from 'vue'
 import AdminLayout from '../../../components/AdminLayout.vue'
 import ConfirmDialog from '../../../components/ConfirmDialog.vue'
 import EmptyState from '../../../components/EmptyState.vue'
+import { stripHtml } from '../../../utils/richtext.js'
 
 const props = defineProps({
     job: { type: Object, required: true },
@@ -18,6 +19,7 @@ const typeLabels = {
     textarea: 'Văn bản dài',
     select: 'Dropdown',
     radio: 'Radio (chọn 1)',
+    date: 'Ngày tháng (dd/mm/yyyy)',
 }
 
 const draggingIdx = ref(null)
@@ -125,9 +127,9 @@ const confirmDelete = () => {
 </script>
 
 <template>
-    <Head :title="`Form: ${job.title} — AnPhat HR`" />
+    <Head :title="`Form: ${stripHtml(job.title)} — AnPhat HR`" />
 
-    <AdminLayout :title="`Form sơ vấn: ${job.title}`" breadcrumb="Admin / Vị trí tuyển / Form">
+    <AdminLayout :title="`Form sơ vấn: ${stripHtml(job.title)}`" breadcrumb="Admin / Vị trí tuyển / Form">
         <div class="max-w-4xl">
             <div class="mb-4 flex items-center gap-3">
                 <Link href="/admin/jobs" class="text-sm text-slate-500 hover:text-[#0D7C66]">← Danh sách vị trí</Link>

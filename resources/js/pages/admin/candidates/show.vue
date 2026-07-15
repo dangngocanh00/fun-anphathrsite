@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 import AdminLayout from '../../../components/AdminLayout.vue'
 import ConfirmDialog from '../../../components/ConfirmDialog.vue'
 import ScoreBadge from '../../../components/ScoreBadge.vue'
+import { stripHtml } from '../../../utils/richtext.js'
 
 const props = defineProps({
     candidate: { type: Object, required: true },
@@ -91,8 +92,8 @@ const aiAnalyzed = computed(() => !!props.candidate.ai?.analyzed_at)
                         <h2 class="text-2xl font-bold text-[#1B2B4B] tracking-tight mt-2">{{ candidate.full_name }}</h2>
                         <p class="text-sm text-slate-500 mt-1">
                             Ứng tuyển vị trí
-                            <span class="font-semibold text-[#1B2B4B]">{{ candidate.job?.title }}</span>
-                            <span v-if="candidate.job?.department" class="text-slate-400"> · {{ candidate.job.department }}</span>
+                            <span class="font-semibold text-[#1B2B4B]">{{ stripHtml(candidate.job?.title) }}</span>
+                            <span v-if="candidate.job?.department" class="text-slate-400"> · {{ stripHtml(candidate.job.department) }}</span>
                         </p>
                     </div>
                     <a

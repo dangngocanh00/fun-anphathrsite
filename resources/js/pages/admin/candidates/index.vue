@@ -5,6 +5,7 @@ import AdminLayout from '../../../components/AdminLayout.vue'
 import ConfirmDialog from '../../../components/ConfirmDialog.vue'
 import EmptyState from '../../../components/EmptyState.vue'
 import ScoreBadge from '../../../components/ScoreBadge.vue'
+import { stripHtml } from '../../../utils/richtext.js'
 
 const props = defineProps({
     candidates: { type: Object, required: true },
@@ -95,7 +96,7 @@ const formatDate = (iso) => {
                     class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 focus:outline-none"
                 >
                     <option :value="null">Tất cả vị trí</option>
-                    <option v-for="j in jobs" :key="j.id" :value="j.id">{{ j.title }}</option>
+                    <option v-for="j in jobs" :key="j.id" :value="j.id">{{ stripHtml(j.title) }}</option>
                 </select>
             </div>
             <div class="md:col-span-2">
@@ -174,8 +175,8 @@ const formatDate = (iso) => {
                                 </p>
                             </td>
                             <td class="px-6 py-4">
-                                <p class="text-sm text-[#1B2B4B]">{{ c.job?.title ?? '—' }}</p>
-                                <p class="text-xs text-slate-500 mt-0.5">{{ c.job?.department }}</p>
+                                <p class="text-sm text-[#1B2B4B]">{{ stripHtml(c.job?.title) || '—' }}</p>
+                                <p class="text-xs text-slate-500 mt-0.5">{{ stripHtml(c.job?.department) }}</p>
                             </td>
                             <td class="px-6 py-4">
                                 <span :class="['inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap', stageTone(c.current_stage)]">

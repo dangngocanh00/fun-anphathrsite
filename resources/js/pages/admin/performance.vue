@@ -21,11 +21,11 @@ const formatVnd = (n) => new Intl.NumberFormat('vi-VN').format(Number(n) || 0) +
 
 const stages = [
     { key: 'assigned', label: 'Hồ sơ gán', tone: 'bg-slate-200' },
-    { key: 'screened', label: 'Sơ vấn', tone: 'bg-[#34D399]/40' },
     { key: 'tested', label: 'Sàng lọc', tone: 'bg-[#34D399]/60' },
     { key: 'interviewed', label: 'PV chuyên môn', tone: 'bg-[#34D399]/75' },
     { key: 'probation', label: 'Thử việc', tone: 'bg-[#0D7C66]/85' },
     { key: 'hired', label: 'Ký HĐ', tone: 'bg-[#0D7C66]' },
+    { key: 'rejected', label: 'Loại CV', tone: 'bg-red-300' },
 ]
 
 const maxAssigned = computed(() => Math.max(1, ...props.rows.map((r) => r.funnel.assigned)))
@@ -121,7 +121,8 @@ const roleLabels = { admin: 'Quản trị viên', hr_manager: 'Trưởng nhóm',
         </div>
 
         <p class="mt-4 text-xs text-slate-400">
-            * Commission = Σ đơn giá vị trí × số ứng viên đã ký HĐ trong tháng. Bước trước (Sơ vấn → Thử việc) tính cộng dồn.
+            * Commission = Σ đơn giá vị trí × số ứng viên đã ký HĐ trong tháng. Sàng lọc → Thử việc tính cộng dồn (đang ở bước đó hoặc xa hơn).
+            Loại CV đếm riêng, không cộng dồn vào các bước sau.
         </p>
     </AdminLayout>
 </template>

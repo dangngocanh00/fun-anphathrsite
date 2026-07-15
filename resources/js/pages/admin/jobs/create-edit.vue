@@ -2,14 +2,16 @@
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import AdminLayout from '../../../components/AdminLayout.vue'
+import RichTextField from '../../../components/RichTextField.vue'
 import { slugifyVi } from '../../../utils/slugify.js'
+import { stripHtml } from '../../../utils/richtext.js'
 
 const props = defineProps({
     job: { type: Object, default: null },
 })
 
 const isEdit = computed(() => !!props.job)
-const pageTitle = computed(() => isEdit.value ? `Sửa: ${props.job.title}` : 'Tạo vị trí mới')
+const pageTitle = computed(() => isEdit.value ? `Sửa: ${stripHtml(props.job.title)}` : 'Tạo vị trí mới')
 
 const form = useForm({
     title: props.job?.title ?? '',
@@ -20,7 +22,7 @@ const form = useForm({
     commission_amount: props.job?.commission_amount ?? 0,
 })
 
-const previewSlug = computed(() => slugifyVi(form.title) || '(trống)')
+const previewSlug = computed(() => slugifyVi(stripHtml(form.title)) || '(trống)')
 
 const submit = () => {
     if (isEdit.value) {
@@ -47,13 +49,11 @@ const formatVnd = (n) => new Intl.NumberFormat('vi-VN').format(Number(n) || 0)
                     <label class="block text-sm font-semibold text-[#1B2B4B] mb-1.5">
                         Tên vị trí <span class="text-red-500">*</span>
                     </label>
-                    <input
+                    <RichTextField
                         v-model="form.title"
-                        type="text"
-                        required
+                        :multiline="false"
                         placeholder="Vd: Trưởng phòng Kinh doanh khu vực miền Bắc"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 focus:outline-none"
-                        :class="{ 'border-red-300 focus:border-red-400 focus:ring-red-100': form.errors.title }"
+                        :invalid="!!form.errors.title"
                     />
                     <p v-if="form.errors.title" class="mt-1 text-xs text-red-600">{{ form.errors.title }}</p>
                     <p class="mt-1.5 text-[11px] text-slate-400">
@@ -64,20 +64,18 @@ const formatVnd = (n) => new Intl.NumberFormat('vi-VN').format(Number(n) || 0)
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>
                         <label class="block text-sm font-semibold text-[#1B2B4B] mb-1.5">Khối / Phòng ban</label>
-                        <input
+                        <RichTextField
                             v-model="form.department"
-                            type="text"
+                            :multiline="false"
                             placeholder="Vd: Khối Kinh doanh"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 focus:outline-none"
                         />
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-[#1B2B4B] mb-1.5">Địa điểm</label>
-                        <input
+                        <RichTextField
                             v-model="form.location"
-                            type="text"
+                            :multiline="false"
                             placeholder="Vd: Hà Nội / Remote"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 focus:outline-none"
                         />
                     </div>
                 </div>
@@ -86,13 +84,11 @@ const formatVnd = (n) => new Intl.NumberFormat('vi-VN').format(Number(n) || 0)
                     <label class="block text-sm font-semibold text-[#1B2B4B] mb-1.5">
                         Mô tả công việc <span class="text-red-500">*</span>
                     </label>
-                    <textarea
+                    <RichTextField
                         v-model="form.description"
-                        rows="6"
-                        required
+                        min-height="150px"
                         placeholder="Mô tả chi tiết về công việc, môi trường, quyền lợi..."
-                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 focus:outline-none"
-                        :class="{ 'border-red-300 focus:border-red-400 focus:ring-red-100': form.errors.description }"
+                        :invalid="!!form.errors.description"
                     />
                     <p v-if="form.errors.description" class="mt-1 text-xs text-red-600">{{ form.errors.description }}</p>
                     <p class="mt-1.5 text-[11px] text-slate-400">Hỗ trợ xuống dòng. Sẽ hiển thị nguyên trên trang công khai.</p>
@@ -100,11 +96,10 @@ const formatVnd = (n) => new Intl.NumberFormat('vi-VN').format(Number(n) || 0)
 
                 <div>
                     <label class="block text-sm font-semibold text-[#1B2B4B] mb-1.5">Yêu cầu ứng viên</label>
-                    <textarea
+                    <RichTextField
                         v-model="form.requirements"
-                        rows="5"
+                        min-height="120px"
                         placeholder="- Tốt nghiệp..."
-                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 focus:outline-none"
                     />
                 </div>
 

@@ -110,9 +110,11 @@ class JobAdminController extends Controller
             ->with('success', "Đã xoá \"{$title}\". Có thể khôi phục từ lịch sử.");
     }
 
+    private const ALLOWED_TAGS = '<b><strong><i><em><u><br>';
+
     private function validateData(Request $request, ?Job $job = null): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'title' => ['required', 'string', 'max:160'],
             'department' => ['nullable', 'string', 'max:120'],
             'location' => ['nullable', 'string', 'max:120'],
@@ -125,11 +127,19 @@ class JobAdminController extends Controller
             'commission_amount.required' => 'Vui lòng nhập đơn giá hoa hồng.',
             'commission_amount.integer' => 'Đơn giá phải là số nguyên (VND).',
         ]);
+
+        foreach (['title', 'department', 'location', 'description', 'requirements'] as $field) {
+            if (isset($data[$field])) {
+                $data[$field] = strip_tags($data[$field], self::ALLOWED_TAGS);
+            }
+        }
+
+        return $data;
     }
 
     private function uniqueSlug(string $title, ?int $ignoreId = null): string
     {
-        $base = Str::slug($title);
+        $base = Str::slug(strip_tags($title));
         if ($base === '') {
             $base = 'vi-tri-'.now()->timestamp;
         }

@@ -33,11 +33,13 @@ class PerformanceController extends Controller
                 $own = $candidates->where('assigned_hr_id', $u->id);
 
                 $assigned = $own->count();
-                $screened = $own->where('current_stage', '>=', 2)->count();
-                $tested = $own->where('current_stage', '>=', 3)->count();
-                $interviewed = $own->where('current_stage', '>=', 4)->count();
-                $probation = $own->where('current_stage', '>=', 5)->count();
+                // "Loại CV" (stage 4) có thể đến từ bất kỳ bước nào nên không dùng >= liên tục được nữa —
+                // chỉ đếm ứng viên còn đang thực sự ở/đi qua từng bước tiến, loại trừ ứng viên đã bị loại.
+                $tested = $own->whereIn('current_stage', [2, 3, 5, 6])->count();
+                $interviewed = $own->whereIn('current_stage', [3, 5, 6])->count();
+                $probation = $own->whereIn('current_stage', [5, 6])->count();
                 $hired = $own->where('current_stage', 6)->count();
+                $rejected = $own->where('current_stage', PipelineController::REJECTED_STAGE)->count();
 
                 $commission = $own
                     ->where('current_stage', 6)
@@ -49,11 +51,11 @@ class PerformanceController extends Controller
                     'role' => $u->getRoleNames()->first(),
                     'funnel' => [
                         'assigned' => $assigned,
-                        'screened' => $screened,
                         'tested' => $tested,
                         'interviewed' => $interviewed,
                         'probation' => $probation,
                         'hired' => $hired,
+                        'rejected' => $rejected,
                     ],
                     'commission' => $commission,
                     'conversion_rate' => $assigned > 0 ? round($hired / $assigned * 100, 1) : 0.0,
@@ -63,11 +65,11 @@ class PerformanceController extends Controller
 
         $totals = [
             'assigned' => $hrs->sum('funnel.assigned'),
-            'screened' => $hrs->sum('funnel.screened'),
             'tested' => $hrs->sum('funnel.tested'),
             'interviewed' => $hrs->sum('funnel.interviewed'),
             'probation' => $hrs->sum('funnel.probation'),
             'hired' => $hrs->sum('funnel.hired'),
+            'rejected' => $hrs->sum('funnel.rejected'),
             'commission' => $hrs->sum('commission'),
         ];
 

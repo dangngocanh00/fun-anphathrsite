@@ -22,12 +22,14 @@ class PipelineController extends Controller
 {
     public const STAGES = [
         1 => 'Tiếp nhận hồ sơ',
-        2 => 'Sơ vấn (hotline)',
-        3 => 'Sàng lọc / Test năng lực',
-        4 => 'Phỏng vấn chuyên môn',
+        2 => 'Sàng lọc / Test năng lực',
+        3 => 'Phỏng vấn chuyên môn',
+        4 => 'Loại CV',
         5 => 'Thử việc',
         6 => 'Ký hợp đồng',
     ];
+
+    public const REJECTED_STAGE = 4;
 
     private const MANAGER_ROLES = ['admin', 'hr_manager'];
 

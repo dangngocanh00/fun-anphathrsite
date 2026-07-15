@@ -22,7 +22,7 @@ defineProps({
                     </span>
                     <h1 class="mt-4 text-3xl md:text-5xl font-extrabold text-[#1B2B4B] tracking-tight leading-tight">
                         Cùng AnPhat <br class="hidden md:block" />
-                        xây dựng đội ngũ <span class="text-[#0D7C66]">nhiệt huyết</span>.
+                        xây dựng đội ngũ <br class="hidden md:block" /><span class="text-[#0D7C66]">nhiệt huyết</span>
                     </h1>
                     <p class="mt-5 text-base md:text-lg text-slate-600 leading-relaxed max-w-xl">
                         Chúng tôi đang tìm kiếm những đồng đội cùng chí hướng — minh bạch về lương,
@@ -74,7 +74,7 @@ defineProps({
             <div v-else class="space-y-12">
                 <div v-for="group in groups" :key="group.department">
                     <div class="flex items-center gap-3 mb-5">
-                        <h3 class="text-lg font-bold text-[#1B2B4B] tracking-tight">{{ group.department }}</h3>
+                        <h3 class="text-lg font-bold text-[#1B2B4B] tracking-tight" v-html="group.department"></h3>
                         <span class="inline-flex items-center rounded-full bg-slate-100 text-slate-600 px-2.5 py-0.5 text-xs font-medium">
                             {{ group.jobs.length }} vị trí
                         </span>
@@ -86,15 +86,11 @@ defineProps({
                             :href="`/jobs/${job.slug}`"
                             class="group rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 p-5 flex flex-col"
                         >
-                            <span class="inline-flex self-start items-center rounded-full bg-[#0D7C66]/10 text-[#0D7C66] px-2.5 py-0.5 text-[11px] font-semibold tracking-wide">
-                                {{ job.department }}
-                            </span>
-                            <h4 class="mt-3 text-base font-semibold text-[#1B2B4B] group-hover:text-[#0D7C66] transition-colors leading-snug">
-                                {{ job.title }}
-                            </h4>
+                            <span class="inline-flex self-start items-center rounded-full bg-[#0D7C66]/10 text-[#0D7C66] px-2.5 py-0.5 text-[11px] font-semibold tracking-wide" v-html="job.department"></span>
+                            <h4 class="mt-3 text-base font-semibold text-[#1B2B4B] group-hover:text-[#0D7C66] transition-colors leading-snug" v-html="job.title"></h4>
                             <p v-if="job.location" class="mt-1.5 text-sm text-slate-500 flex items-center gap-1.5">
                                 <svg class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                {{ job.location }}
+                                <span v-html="job.location"></span>
                             </p>
                             <div class="mt-auto pt-5 flex items-center justify-between">
                                 <span class="inline-flex items-center rounded-full bg-emerald-50 text-emerald-700 px-2.5 py-0.5 text-xs font-medium">Đang tuyển</span>

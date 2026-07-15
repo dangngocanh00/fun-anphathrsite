@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import AdminLayout from '../../../components/AdminLayout.vue'
 import EmptyState from '../../../components/EmptyState.vue'
+import { stripHtml } from '../../../utils/richtext.js'
 
 defineProps({
     jobs: { type: Array, default: () => [] },
@@ -73,12 +74,12 @@ const deleteJob = (job) => {
                     <tbody class="divide-y divide-slate-100">
                         <tr v-for="job in jobs" :key="job.id" class="hover:bg-slate-50/60">
                             <td class="px-6 py-4">
-                                <p class="font-semibold text-[#1B2B4B]">{{ job.title }}</p>
+                                <p class="font-semibold text-[#1B2B4B]">{{ stripHtml(job.title) }}</p>
                                 <p class="text-xs text-slate-400 mt-0.5 font-mono">/{{ job.slug }}</p>
                             </td>
                             <td class="px-6 py-4 text-slate-600">
-                                <p>{{ job.department || '—' }}</p>
-                                <p class="text-xs text-slate-400 mt-0.5">{{ job.location || '—' }}</p>
+                                <p>{{ stripHtml(job.department) || '—' }}</p>
+                                <p class="text-xs text-slate-400 mt-0.5">{{ stripHtml(job.location) || '—' }}</p>
                             </td>
                             <td class="px-6 py-4 text-right font-semibold text-[#0D7C66]">{{ formatVnd(job.commission_amount) }}</td>
                             <td class="px-6 py-4 text-center">

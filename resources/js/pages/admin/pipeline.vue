@@ -1,8 +1,9 @@
 <script setup>
-import { Head, router } from '@inertiajs/vue3'
+import { Head, Link, router } from '@inertiajs/vue3'
 import { computed, ref, watch } from 'vue'
 import AdminLayout from '../../components/AdminLayout.vue'
 import ScoreBadge from '../../components/ScoreBadge.vue'
+import { stripHtml } from '../../utils/richtext.js'
 
 const props = defineProps({
     columns: { type: Array, default: () => [] },
@@ -131,7 +132,7 @@ const resultClass = (r) => ({
                     class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm focus:border-[#0D7C66] focus:ring-2 focus:ring-[#0D7C66]/20 focus:outline-none"
                 >
                     <option :value="null">Tất cả</option>
-                    <option v-for="j in jobs" :key="j.id" :value="j.id">{{ j.title }}</option>
+                    <option v-for="j in jobs" :key="j.id" :value="j.id">{{ stripHtml(j.title) }}</option>
                 </select>
             </div>
             <div v-if="can.manage" class="flex items-center gap-2">
@@ -162,7 +163,8 @@ const resultClass = (r) => ({
                     :key="col.stage"
                     :class="[
                         'w-72 shrink-0 rounded-2xl border transition-all duration-200',
-                        dragOverStage === col.stage ? 'border-[#0D7C66] bg-[#ecfdf7]' : 'border-slate-200 bg-slate-50',
+                        dragOverStage === col.stage ? 'border-[#0D7C66] bg-[#ecfdf7]' :
+                            col.name === 'Loại CV' ? 'border-red-200 bg-red-50/40' : 'border-slate-200 bg-slate-50',
                     ]"
                     @dragover="onDragOver($event, col.stage)"
                     @dragleave="onDragLeave(col.stage)"
@@ -170,13 +172,21 @@ const resultClass = (r) => ({
                 >
                     <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
                         <p class="text-sm font-semibold text-[#1B2B4B] tracking-tight">
-                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#1B2B4B] text-white text-[10px] font-bold mr-1.5">{{ col.stage }}</span>
+                            <span
+                                :class="[
+                                    'inline-flex items-center justify-center w-5 h-5 rounded-full text-white text-[10px] font-bold mr-1.5',
+                                    col.name === 'Loại CV' ? 'bg-red-500' : 'bg-[#1B2B4B]',
+                                ]"
+                            >{{ col.stage }}</span>
                             {{ col.name }}
                         </p>
                         <span class="inline-flex items-center rounded-full bg-white border border-slate-200 px-2 py-0.5 text-xs text-slate-600">
                             {{ col.cards.length }}
                         </span>
                     </div>
+                    <p v-if="col.name === 'Loại CV'" class="px-4 pt-2 text-[11px] text-red-500 font-medium">
+                        🗑 Tự động xoá sau 7 ngày
+                    </p>
 
                     <div class="p-3 space-y-2 min-h-[120px]">
                         <p v-if="col.cards.length === 0" class="text-xs text-slate-400 text-center py-6">Chưa có ứng viên</p>
@@ -194,7 +204,7 @@ const resultClass = (r) => ({
                                 <p class="font-semibold text-sm text-[#1B2B4B] leading-tight">{{ card.full_name }}</p>
                                 <ScoreBadge :score="card.ai_score" />
                             </div>
-                            <p class="text-xs text-slate-500 mt-1.5 leading-snug">{{ card.job?.title }}</p>
+                            <p class="text-xs text-slate-500 mt-1.5 leading-snug">{{ stripHtml(card.job?.title) }}</p>
                             <div class="mt-2.5 flex items-center justify-between text-[11px] text-slate-400">
                                 <span v-if="card.assigned_hr">👤 {{ card.assigned_hr.name }}</span>
                                 <span v-else class="italic">Chưa gán HR</span>
@@ -207,7 +217,7 @@ const resultClass = (r) => ({
         </div>
 
         <p class="mt-3 text-xs text-slate-400 leading-relaxed">
-            * Ứng viên đã ở bước "Ký hợp đồng" trên 1 tháng được ẩn tự động khỏi Kanban để giảm nhiễu. Vẫn xem được đầy đủ trong
+            * Ứng viên đã ở bước "Ký hợp đồng" trên 1 tháng được ẩn tự động khỏi Kanban để giảm nhiễu. Ứng viên ở cột "Loại CV" quá 7 ngày sẽ tự động bị xoá. Vẫn xem được đầy đủ trong
             <Link href="/admin/candidates" class="text-[#0D7C66] hover:underline font-medium">danh sách ứng viên</Link>.
         </p>
 
@@ -243,8 +253,8 @@ const resultClass = (r) => ({
                             </div>
                             <div>
                                 <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Vị trí ứng tuyển</p>
-                                <p class="mt-2 text-sm font-semibold text-[#1B2B4B]">{{ detail.job?.title }}</p>
-                                <p class="text-xs text-slate-500">{{ detail.job?.department }} · {{ detail.job?.location }}</p>
+                                <p class="mt-2 text-sm font-semibold text-[#1B2B4B]">{{ stripHtml(detail.job?.title) }}</p>
+                                <p class="text-xs text-slate-500">{{ stripHtml(detail.job?.department) }} · {{ stripHtml(detail.job?.location) }}</p>
                                 <p class="text-xs text-slate-500 mt-2">
                                     HR phụ trách:
                                     <span class="font-medium text-[#1B2B4B]">{{ detail.assigned_hr?.name || 'Chưa gán' }}</span>

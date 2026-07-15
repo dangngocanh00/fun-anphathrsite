@@ -14,7 +14,7 @@ use Inertia\Response;
 
 class JobFormController extends Controller
 {
-    private const TYPES = ['text', 'textarea', 'select', 'radio'];
+    private const TYPES = ['text', 'textarea', 'select', 'radio', 'date'];
 
     public function index(Job $job): Response
     {

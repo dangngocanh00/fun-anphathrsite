@@ -21,7 +21,7 @@ class DashboardController extends Controller
                 ->whereDate('created_at', $today)
                 ->count(),
             'in_pipeline' => Candidate::query()
-                ->whereBetween('current_stage', [1, 5])
+                ->whereIn('current_stage', [1, 2, 3, 5])
                 ->count(),
             'hired_this_month' => Candidate::query()
                 ->where('current_stage', 6)

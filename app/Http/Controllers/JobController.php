@@ -23,9 +23,9 @@ class JobController extends Controller
             ->get(['id', 'title', 'slug', 'department', 'location', 'created_at']);
 
         $groups = $jobs
-            ->groupBy(fn (Job $j) => $j->department ?: 'Khác')
+            ->groupBy(fn (Job $j) => strip_tags($j->department) ?: 'Khác')
             ->map(fn ($items, $dep) => [
-                'department' => $dep,
+                'department' => $items->first()->department ?: 'Khác',
                 'jobs' => $items->values(),
             ])
             ->values();
@@ -80,7 +80,11 @@ class JobController extends Controller
                 Rule::unique('candidates', 'phone')
                     ->where(fn ($q) => $q->where('job_id', $job->id)->whereNull('deleted_at')),
             ],
-            'email' => ['nullable', 'email', 'max:120'],
+            'email' => [
+                'required', 'email', 'max:120',
+                Rule::unique('candidates', 'email')
+                    ->where(fn ($q) => $q->where('job_id', $job->id)->whereNull('deleted_at')),
+            ],
             'cv_link' => ['required', 'url', 'max:1024', function ($attr, $value, $fail) {
                 $host = parse_url($value, PHP_URL_HOST) ?: '';
                 if (! preg_match('/(^|\.)(drive|docs)\.google\.com$/i', $host)) {
@@ -94,7 +98,9 @@ class JobController extends Controller
             'full_name.required' => 'Vui lòng nhập họ và tên.',
             'phone.required' => 'Vui lòng nhập số điện thoại.',
             'phone.unique' => 'Số điện thoại này đã ứng tuyển vị trí này rồi.',
+            'email.required' => 'Vui lòng nhập email.',
             'email.email' => 'Email không hợp lệ.',
+            'email.unique' => 'Email này đã ứng tuyển vị trí này rồi.',
             'cv_link.required' => 'Vui lòng dán link CV.',
             'cv_link.url' => 'Link CV không hợp lệ.',
         ];
@@ -107,6 +113,23 @@ class JobController extends Controller
 
             if (in_array($field->type, ['select', 'radio'], true) && $field->options) {
                 $rules[$key][] = Rule::in($field->options);
+            }
+
+            if ($field->type === 'date') {
+                $rules[$key][] = function ($attr, $value, $fail) {
+                    if ($value === null || $value === '') {
+                        return;
+                    }
+                    if (! preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $value)) {
+                        $fail('Ngày không đúng định dạng dd/mm/yyyy.');
+
+                        return;
+                    }
+                    [$d, $m, $y] = explode('/', $value);
+                    if (! checkdate((int) $m, (int) $d, (int) $y)) {
+                        $fail('Ngày không hợp lệ.');
+                    }
+                };
             }
 
             $messages["{$key}.required"] = "Vui lòng trả lời câu hỏi: {$field->label}";

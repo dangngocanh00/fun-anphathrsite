@@ -139,15 +139,15 @@ PROMPT;
     {
         return collect([
             "## VỊ TRÍ TUYỂN DỤNG",
-            "Tiêu đề: {$job->title}",
-            "Khối / phòng ban: ".($job->department ?: '—'),
-            "Địa điểm: ".($job->location ?: '—'),
+            'Tiêu đề: '.strip_tags($job->title),
+            "Khối / phòng ban: ".strip_tags($job->department ?: '—'),
+            "Địa điểm: ".strip_tags($job->location ?: '—'),
             '',
             '### Mô tả công việc',
-            $job->description,
+            strip_tags($job->description),
             '',
             '### Yêu cầu ứng viên',
-            $job->requirements ?: '(không có yêu cầu cụ thể)',
+            strip_tags($job->requirements ?: '(không có yêu cầu cụ thể)'),
         ])->implode("\n");
     }
 

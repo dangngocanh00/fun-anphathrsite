@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import AdminLayout from '../../components/AdminLayout.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import ScoreBadge from '../../components/ScoreBadge.vue'
+import { stripHtml } from '../../utils/richtext.js'
 
 const props = defineProps({
     candidates: { type: Array, default: () => [] },
@@ -82,8 +83,8 @@ const analyze = (candidate) => {
                                 <p class="text-xs text-slate-500 mt-0.5">{{ c.phone }}<span v-if="c.email"> · {{ c.email }}</span></p>
                             </td>
                             <td class="px-6 py-4">
-                                <p class="text-sm text-[#1B2B4B]">{{ c.job?.title }}</p>
-                                <p class="text-xs text-slate-500 mt-0.5">{{ c.job?.department }}</p>
+                                <p class="text-sm text-[#1B2B4B]">{{ stripHtml(c.job?.title) }}</p>
+                                <p class="text-xs text-slate-500 mt-0.5">{{ stripHtml(c.job?.department) }}</p>
                             </td>
                             <td class="px-6 py-4 text-slate-600 whitespace-nowrap">{{ formatDate(c.created_at) }}</td>
                             <td class="px-6 py-4">
